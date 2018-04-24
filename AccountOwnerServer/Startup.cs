@@ -1,17 +1,23 @@
-﻿using AccountOwnerServer.Extensions;
+﻿using System;
+using System.IO;
+using AccountOwnerServer.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+
 
 namespace AccountOwnerServer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+        public Startup(IConfiguration configuration,ILoggerFactory loggerFactory)
         {
+            loggerFactory.ConfigureNLog(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
             Configuration = configuration;
         }
 
@@ -22,29 +28,34 @@ namespace AccountOwnerServer
         {
             services.ConfigureCors();
             services.ConfigureIisIntegration();
+            services.ConfigureLoggerService();
+            services.ConfigureMySqlContext(Configuration);
+            services.ConfigureRepositoryWrapper();
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             app.UseCors("CorsPolicy");
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-                {
-                    ForwardedHeaders = ForwardedHeaders.All
-                }
-            );
-
+            app.UseForwardedHeaders(new  ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All
+            });
             app.Use(async (context, next) =>
             {
                 await next();
-                if (context.Response.StatusCode==404 && !Path.HasExtension(context.Request.Path.Value))
+                if (context.Response.StatusCode==404 && Path.HasExtension(context.Request.Path.Value))
                 {
                     context.Request.Path = "/index.html";
                     await next();
                 }
+
             });
             app.UseStaticFiles();
             app.UseMvc();
