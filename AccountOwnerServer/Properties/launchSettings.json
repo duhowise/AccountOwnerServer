@@ -19,7 +19,7 @@
     "AccountOwnerServer": {
       "commandName": "Project",
       "launchBrowser": false,
-      "launchUrl": "api/values",
+      "launchUrl": "api/owner",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

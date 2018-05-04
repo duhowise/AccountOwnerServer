@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
 {
-   [Table("account")] public class Account
+   [Table("account")] public class Account:IEntity
     {
         [Key]
         [Column("AccountId")]
@@ -18,5 +18,7 @@ namespace Entities.Models
 
         [Required(ErrorMessage = "Owner Id is required")]
         public Guid OwnerId { get; set; }
+
+       
     }
 }

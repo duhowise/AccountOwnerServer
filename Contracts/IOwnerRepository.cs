@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Entities.ExtendedModels;
+using Entities.Extensions;
 using Entities.Models;
 
 namespace Contracts
@@ -10,5 +10,8 @@ namespace Contracts
         IEnumerable<Owner> GetAllOwners();
         Owner GetOwnerById(Guid ownerId);
         OwnerExtended GetOwnerWithDetails(Guid ownerId);
+        void CreateOwner(Owner owner);
+        void DeleteOwner(Owner owner);
+        void UpdateOwner(Owner dbOwner, Owner owner);
     }
 }
