@@ -17,7 +17,7 @@ namespace AccountOwnerServer.Extensions
         }
         public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration["mysqlconnection:connectionstring"];
+            var connectionString = configuration["mysqlConnection:connectionString"];
             services.AddDbContext<RepositoryContext>(c=>c.UseMySql(connectionString));
         }
       public  static void ConfigureCors(this IServiceCollection services)
