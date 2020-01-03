@@ -4,5 +4,6 @@
     {
         IOwnerRepository Owner { get; }
         IAccountRepository Account { get; }
+        void Save();
     }
 }

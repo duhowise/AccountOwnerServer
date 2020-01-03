@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Contracts;
 using Entities.Extensions;
 using Entities.Models;
@@ -15,11 +16,12 @@ namespace AccountOwnerServer.Controllers
         private readonly ILoggerManager _logger;
         private readonly IRepositoryWrapper _repository;
 
-        public OwnerController(ILoggerManager logger,IRepositoryWrapper repository)
+        public OwnerController(ILoggerManager logger, IRepositoryWrapper repository)
         {
             _logger = logger;
             _repository = repository;
         }
+
         // GET: api/values
         [HttpGet]
         public IActionResult Get()
@@ -35,17 +37,16 @@ namespace AccountOwnerServer.Controllers
                 _logger.LogError($"Something went wrong inside GetAllOwners action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
-            
         }
 
         // GET api/values/5
 
         [HttpGet("{id}", Name = "OwnerById")]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             try
             {
-                var owner = _repository.Owner.GetOwnerById(id);
+                var owner = await _repository.Owner.GetOwnerById(id);
 
                 if (owner.IsEmptyObject())
                 {
@@ -64,13 +65,13 @@ namespace AccountOwnerServer.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        
+
         [HttpGet("{id}/account")]
-        public IActionResult GetWithDetails(Guid id)
+        public async Task<IActionResult> GetWithDetails(Guid id)
         {
             try
             {
-                var owner = _repository.Owner.GetOwnerWithDetails(id);
+                var owner = await _repository.Owner.GetOwnerWithDetails(id);
 
                 if (owner.IsEmptyObject())
                 {
@@ -93,7 +94,7 @@ namespace AccountOwnerServer.Controllers
         // POST api/values
         [HttpPost]
         [Route("")]
-        public IActionResult CreateOwner([FromBody]Owner owner)
+        public IActionResult CreateOwner([FromBody] Owner owner)
         {
             try
             {
@@ -101,21 +102,19 @@ namespace AccountOwnerServer.Controllers
                 {
                     _logger.LogError("Owner object sent from client is null");
                     return BadRequest("Owner object is null");
-
                 }
 
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Owner object sent from client is Invalid");
                     return BadRequest($"Owner object is Invalid");
-
                 }
+
                 _repository.Owner.CreateOwner(owner);
                 return CreatedAtRoute("OwnerById", new {id = owner.Id}, owner);
             }
             catch (Exception ex)
             {
-
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
@@ -123,7 +122,7 @@ namespace AccountOwnerServer.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult UpdateOwner(Guid id,[FromBody] Owner owner)
+        public async Task<IActionResult> UpdateOwner(Guid id, [FromBody] Owner owner)
         {
             try
             {
@@ -131,24 +130,23 @@ namespace AccountOwnerServer.Controllers
                 {
                     _logger.LogError("Owner object sent from client is null");
                     return BadRequest("Owner object is null");
-
                 }
 
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Owner object sent from client is Invalid");
                     return BadRequest($"Owner object is Invalid");
-
                 }
 
-                var dbOwner = _repository.Owner.GetOwnerById(id);
+                var dbOwner = await _repository.Owner.GetOwnerById(id);
 
                 if (dbOwner.IsEmptyObject())
                 {
                     _logger.LogError($"Owner with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
-                _repository.Owner.UpdateOwner(dbOwner, owner);
+
+                await _repository.Owner.UpdateOwner(dbOwner, owner);
                 return NoContent();
             }
             catch (Exception ex)
@@ -160,25 +158,25 @@ namespace AccountOwnerServer.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteOwner(Guid id)
+        public async Task<IActionResult> DeleteOwner(Guid id)
         {
             try
             {
-                var owner = _repository.Owner.GetOwnerById(id);
+                var owner = await _repository.Owner.GetOwnerById(id);
                 if (owner.IsObjectNull())
                 {
                     _logger.LogError($"Owner with id {id} not found in database");
                     return NotFound();
-
                 }
 
-                if (_repository.Account.AccountsByOwner(id).Any())
+                if (_repository.Account.AccountsByOwner(id).GetAwaiter().GetResult().Any())
                 {
-                    _logger.LogError($"Cannot delete owner with id: {id}. It has related accounts. Delete those accounts first");
+                    _logger.LogError(
+                        $"Cannot delete owner with id: {id}. It has related accounts. Delete those accounts first");
                     return BadRequest("Cannot delete owner. It has related accounts. Delete those accounts first");
                 }
 
-                _repository.Owner.DeleteOwner(owner);
+                await _repository.Owner.DeleteOwner(owner);
                 return NoContent();
             }
             catch (Exception ex)

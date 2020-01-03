@@ -12,5 +12,10 @@ namespace Entities.Extensions
             if (owner.DateOfBirth !=DateTime.MinValue) dbOwner.DateOfBirth = owner.DateOfBirth;
            
         }
+        public static Owner DefaultIfEmpty(this Owner dbOwner)
+        {
+            return
+            dbOwner;
+        }
     }
 }

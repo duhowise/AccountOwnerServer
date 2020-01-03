@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Entities.Extensions;
 using Entities.Models;
 
@@ -7,11 +8,11 @@ namespace Contracts
 {
     public interface IOwnerRepository : IRepositoryBase<Owner>
     {
-        IEnumerable<Owner> GetAllOwners();
-        Owner GetOwnerById(Guid ownerId);
-        OwnerExtended GetOwnerWithDetails(Guid ownerId);
-        void CreateOwner(Owner owner);
-        void DeleteOwner(Owner owner);
-        void UpdateOwner(Owner dbOwner, Owner owner);
+       Task<IEnumerable<Owner>> GetAllOwners();
+        Task<Owner> GetOwnerById(Guid ownerId);
+        Task<OwnerExtended> GetOwnerWithDetails(Guid ownerId);
+        Task CreateOwner(Owner owner);
+        Task DeleteOwner(Owner owner);
+        Task UpdateOwner(Owner dbOwner, Owner owner);
     }
 }

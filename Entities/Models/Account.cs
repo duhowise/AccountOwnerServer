@@ -19,6 +19,8 @@ namespace Entities.Models
         [Required(ErrorMessage = "Owner Id is required")]
         public Guid OwnerId { get; set; }
 
+        public Owner Owner { get; set; }
+
        
     }
 }

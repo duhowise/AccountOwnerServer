@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Extensions;
@@ -15,45 +16,45 @@ namespace Repository
         {
         }
 
-        public IEnumerable<Owner> GetAllOwners()
+        public async Task<IEnumerable<Owner>> GetAllOwners()
         {
-            return FindAll()
-                .OrderBy(ow => ow.Name);
+           var data= await FindAll();
+               return data.OrderBy(ow => ow.Name);
         }
 
-        public Owner GetOwnerById(Guid ownerId)
+        public async Task<Owner> GetOwnerById(Guid ownerId)
         {
-            return FindByCondition(owner => owner.Id.Equals(ownerId)).DefaultIfEmpty(new Owner())
-                .FirstOrDefault();
+            var data=await FindByCondition(owner => owner.Id.Equals(ownerId));
+            return data.FirstOrDefault();
         }
 
-        public OwnerExtended GetOwnerWithDetails(Guid ownerId)
+        public async Task<OwnerExtended> GetOwnerWithDetails(Guid ownerId)
         {
-            return new OwnerExtended(GetOwnerById(ownerId))
+            return new OwnerExtended(await GetOwnerById(ownerId))
             {
                 Accounts = RepositoryContext.Accounts
                     .Where(a => a.OwnerId == ownerId)
             };
         }
 
-        public void CreateOwner(Owner owner)
+        public async Task CreateOwner(Owner owner)
         {
             owner.Id = Guid.NewGuid();
-            Create(owner);
-            Save();
+          await  Create(owner);
+           await Save();
         }
 
-        public void DeleteOwner(Owner owner)
+        public async Task DeleteOwner(Owner owner)
         {
-            Delete(owner);
-            Save();
+          await  Delete(owner);
+           await Save();
         }
 
-        public void UpdateOwner(Owner dbOwner, Owner owner)
+        public async Task UpdateOwner(Owner dbOwner, Owner owner)
         {
            dbOwner.Map(owner);
-            Update(dbOwner);
-            Save();
+            await Update(dbOwner);
+           await Save();
         }
     }
 }
