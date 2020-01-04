@@ -10,7 +10,7 @@ namespace Contracts
     {
        Task<IEnumerable<Owner>> GetAllOwners();
         Task<Owner> GetOwnerById(Guid ownerId);
-        Task<OwnerExtended> GetOwnerWithDetails(Guid ownerId);
+        Task<Owner> GetOwnerWithDetails(Guid ownerId);
         Task CreateOwner(Owner owner);
         Task DeleteOwner(Owner owner);
         Task UpdateOwner(Owner dbOwner, Owner owner);

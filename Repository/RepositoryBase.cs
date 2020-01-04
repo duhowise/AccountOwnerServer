@@ -18,14 +18,14 @@ namespace Repository
             this.RepositoryContext = repositoryContext;
         }
 
-        public async Task<ICollection<T>> FindAll()
+        public  IQueryable<T> FindAll()
         {
-           return await this.RepositoryContext.Set<T>().AsNoTracking().ToListAsync();
+           return  this.RepositoryContext.Set<T>().AsNoTracking();
         }
 
-        public async Task<ICollection<T>> FindByCondition(Expression<Func<T, bool>> expression)
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
-            return await RepositoryContext.Set<T>().Where(expression).ToListAsync();
+            return  RepositoryContext.Set<T>().Where(expression);
         }
 
         public Task Create(T entity)

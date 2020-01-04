@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AccountOwnerServer.Dto;
+using AutoMapper;
 using Contracts;
 using Entities.Extensions;
 using Entities.Models;
@@ -15,22 +18,25 @@ namespace AccountOwnerServer.Controllers
     {
         private readonly ILoggerManager _logger;
         private readonly IRepositoryWrapper _repository;
+        private readonly IMapper _mapper;
 
-        public OwnerController(ILoggerManager logger, IRepositoryWrapper repository)
+        public OwnerController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper)
         {
             _logger = logger;
             _repository = repository;
+            _mapper = mapper;
         }
 
         // GET: api/values
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var owners = _repository.Owner.GetAllOwners();
+                var owners =await _repository.Owner.GetAllOwners();
                 _logger.LogInfo($"Returned all owners from database.");
-                return Ok(owners);
+                var ownersResult = _mapper.Map<IEnumerable<OwnerDto>>(owners);
+                return Ok(ownersResult);
             }
             catch (Exception ex)
             {
@@ -56,7 +62,8 @@ namespace AccountOwnerServer.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    return Ok(owner);
+                    var ownerResult = _mapper.Map<OwnerDto>(owner);
+                    return Ok(ownerResult);
                 }
             }
             catch (Exception ex)
@@ -81,7 +88,7 @@ namespace AccountOwnerServer.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    return Ok(owner);
+                    return Ok(_mapper.Map<OwnerDto>(owner));
                 }
             }
             catch (Exception ex)

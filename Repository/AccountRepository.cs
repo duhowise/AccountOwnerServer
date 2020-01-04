@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
@@ -16,7 +17,7 @@ namespace Repository
 
         public async Task<IEnumerable<Account>> AccountsByOwner(Guid ownerId)
         {
-            return await FindByCondition(o => o.OwnerId.Equals(ownerId));
+            return await FindByCondition(o => o.OwnerId.Equals(ownerId)).ToListAsync();
         }
     }
 }

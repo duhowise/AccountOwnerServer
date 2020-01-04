@@ -6,6 +6,7 @@ using Contracts;
 using Entities;
 using Entities.Extensions;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
@@ -18,23 +19,17 @@ namespace Repository
 
         public async Task<IEnumerable<Owner>> GetAllOwners()
         {
-           var data= await FindAll();
-               return data.OrderBy(ow => ow.Name);
+          return await FindAll().ToListAsync();
         }
 
         public async Task<Owner> GetOwnerById(Guid ownerId)
         {
-            var data=await FindByCondition(owner => owner.Id.Equals(ownerId));
-            return data.FirstOrDefault();
+            return await FindByCondition(owner => owner.Id.Equals(ownerId)).FirstOrDefaultAsync();
         }
 
-        public async Task<OwnerExtended> GetOwnerWithDetails(Guid ownerId)
+        public async Task<Owner> GetOwnerWithDetails(Guid ownerId)
         {
-            return new OwnerExtended(await GetOwnerById(ownerId))
-            {
-                Accounts = RepositoryContext.Accounts
-                    .Where(a => a.OwnerId == ownerId)
-            };
+            return await FindByCondition(o => o.Id.Equals(ownerId)).Include(ac=>ac.Accounts).FirstOrDefaultAsync();
         }
 
         public async Task CreateOwner(Owner owner)
