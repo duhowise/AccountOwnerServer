@@ -45,9 +45,8 @@ namespace Repository
            await Save();
         }
 
-        public async Task UpdateOwner(Owner dbOwner, Owner owner)
+        public async Task UpdateOwner(Owner dbOwner)
         {
-           dbOwner.Map(owner);
             await Update(dbOwner);
            await Save();
         }

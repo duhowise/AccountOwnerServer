@@ -101,11 +101,11 @@ namespace AccountOwnerServer.Controllers
         // POST api/values
         [HttpPost]
         [Route("")]
-        public IActionResult CreateOwner([FromBody] Owner owner)
+        public IActionResult CreateOwner([FromBody] OwnerForCreationDto owner)
         {
             try
             {
-                if (owner.IsObjectNull())
+                if (owner == null) 
                 {
                     _logger.LogError("Owner object sent from client is null");
                     return BadRequest("Owner object is null");
@@ -117,8 +117,10 @@ namespace AccountOwnerServer.Controllers
                     return BadRequest($"Owner object is Invalid");
                 }
 
-                _repository.Owner.CreateOwner(owner);
-                return CreatedAtRoute("OwnerById", new {id = owner.Id}, owner);
+                var ownerEntity= _mapper.Map<Owner>(owner);
+                _repository.Owner.CreateOwner(ownerEntity);
+                var createdOwner = _mapper.Map<OwnerDto>(ownerEntity);
+                return CreatedAtRoute("OwnerById", new {id = ownerEntity.Id}, createdOwner);
             }
             catch (Exception ex)
             {
@@ -129,11 +131,11 @@ namespace AccountOwnerServer.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOwner(Guid id, [FromBody] Owner owner)
+        public async Task<IActionResult> UpdateOwner(Guid id, [FromBody] OwnerForUpdateDto owner)
         {
             try
             {
-                if (owner.IsObjectNull())
+                if (owner==null)
                 {
                     _logger.LogError("Owner object sent from client is null");
                     return BadRequest("Owner object is null");
@@ -145,15 +147,15 @@ namespace AccountOwnerServer.Controllers
                     return BadRequest($"Owner object is Invalid");
                 }
 
-                var dbOwner = await _repository.Owner.GetOwnerById(id);
+                var ownerEntity = await _repository.Owner.GetOwnerById(id);
 
-                if (dbOwner.IsEmptyObject())
+                if (ownerEntity.IsEmptyObject())
                 {
                     _logger.LogError($"Owner with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
 
-                await _repository.Owner.UpdateOwner(dbOwner, owner);
+                await _repository.Owner.UpdateOwner(ownerEntity);
                 return NoContent();
             }
             catch (Exception ex)

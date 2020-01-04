@@ -13,6 +13,6 @@ namespace Contracts
         Task<Owner> GetOwnerWithDetails(Guid ownerId);
         Task CreateOwner(Owner owner);
         Task DeleteOwner(Owner owner);
-        Task UpdateOwner(Owner dbOwner, Owner owner);
+        Task UpdateOwner(Owner ownerEntity);
     }
 }
