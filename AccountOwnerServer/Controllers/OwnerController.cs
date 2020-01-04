@@ -33,7 +33,7 @@ namespace AccountOwnerServer.Controllers
         {
             try
             {
-                var owners =await _repository.Owner.GetAllOwners();
+                var owners =await _repository.Owner.GetAllOwnersAsync();
                 _logger.LogInfo($"Returned all owners from database.");
                 var ownersResult = _mapper.Map<IEnumerable<OwnerDto>>(owners);
                 return Ok(ownersResult);
@@ -52,7 +52,7 @@ namespace AccountOwnerServer.Controllers
         {
             try
             {
-                var owner = await _repository.Owner.GetOwnerById(id);
+                var owner = await _repository.Owner.GetOwnerByIdAsync(id);
 
                 if (owner.IsEmptyObject())
                 {
@@ -78,7 +78,7 @@ namespace AccountOwnerServer.Controllers
         {
             try
             {
-                var owner = await _repository.Owner.GetOwnerWithDetails(id);
+                var owner = await _repository.Owner.GetOwnerWithDetailsAsync(id);
 
                 if (owner.IsEmptyObject())
                 {
@@ -118,7 +118,7 @@ namespace AccountOwnerServer.Controllers
                 }
 
                 var ownerEntity= _mapper.Map<Owner>(owner);
-                _repository.Owner.CreateOwner(ownerEntity);
+                _repository.Owner.CreateOwnerAsync(ownerEntity);
                 var createdOwner = _mapper.Map<OwnerDto>(ownerEntity);
                 return CreatedAtRoute("OwnerById", new {id = ownerEntity.Id}, createdOwner);
             }
@@ -147,7 +147,7 @@ namespace AccountOwnerServer.Controllers
                     return BadRequest($"Owner object is Invalid");
                 }
 
-                var ownerEntity = await _repository.Owner.GetOwnerById(id);
+                var ownerEntity = await _repository.Owner.GetOwnerByIdAsync(id);
 
                 if (ownerEntity.IsEmptyObject())
                 {
@@ -155,7 +155,7 @@ namespace AccountOwnerServer.Controllers
                     return NotFound();
                 }
 
-                await _repository.Owner.UpdateOwner(ownerEntity);
+                await _repository.Owner.UpdateOwnerAsync(ownerEntity);
                 return NoContent();
             }
             catch (Exception ex)
@@ -171,21 +171,21 @@ namespace AccountOwnerServer.Controllers
         {
             try
             {
-                var owner = await _repository.Owner.GetOwnerById(id);
+                var owner = await _repository.Owner.GetOwnerByIdAsync(id);
                 if (owner.IsObjectNull())
                 {
                     _logger.LogError($"Owner with id {id} not found in database");
                     return NotFound();
                 }
 
-                if (_repository.Account.AccountsByOwner(id).GetAwaiter().GetResult().Any())
+                if ( _repository.Account.AccountsByOwner(id).GetAwaiter().GetResult().Any())
                 {
                     _logger.LogError(
                         $"Cannot delete owner with id: {id}. It has related accounts. Delete those accounts first");
                     return BadRequest("Cannot delete owner. It has related accounts. Delete those accounts first");
                 }
 
-                await _repository.Owner.DeleteOwner(owner);
+                await _repository.Owner.DeleteOwnerAsync(owner);
                 return NoContent();
             }
             catch (Exception ex)

@@ -15,9 +15,9 @@ namespace Repository
         {
         }
 
-        public async Task<IEnumerable<Account>> AccountsByOwner(Guid ownerId)
+        public async Task<List<Account>> AccountsByOwner(Guid ownerId)
         {
-            return await FindByCondition(o => o.OwnerId.Equals(ownerId)).ToListAsync();
+            return await FindByCondition(o => o.OwnerId.Equals(ownerId)).AsNoTracking().ToListAsync();
         }
     }
 }

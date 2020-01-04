@@ -17,35 +17,35 @@ namespace Repository
         {
         }
 
-        public async Task<IEnumerable<Owner>> GetAllOwners()
+        public async Task<IEnumerable<Owner>> GetAllOwnersAsync()
         {
-          return await FindAll().ToListAsync();
+          return await FindAll().OrderBy(ow=>ow.Name).ToListAsync();
         }
 
-        public async Task<Owner> GetOwnerById(Guid ownerId)
+        public async Task<Owner> GetOwnerByIdAsync(Guid ownerId)
         {
-            return await FindByCondition(owner => owner.Id.Equals(ownerId)).FirstOrDefaultAsync();
+            return await FindByCondition(owner => owner.Id.Equals(ownerId)).AsNoTracking().FirstOrDefaultAsync();
         }
 
-        public async Task<Owner> GetOwnerWithDetails(Guid ownerId)
+        public async Task<Owner> GetOwnerWithDetailsAsync(Guid ownerId)
         {
-            return await FindByCondition(o => o.Id.Equals(ownerId)).Include(ac=>ac.Accounts).FirstOrDefaultAsync();
+            return await FindByCondition(o => o.Id.Equals(ownerId)).Include(ac=>ac.Accounts).AsNoTracking().FirstOrDefaultAsync();
         }
 
-        public async Task CreateOwner(Owner owner)
+        public async Task CreateOwnerAsync(Owner owner)
         {
             owner.Id = Guid.NewGuid();
           await  Create(owner);
            await Save();
         }
 
-        public async Task DeleteOwner(Owner owner)
+        public async Task DeleteOwnerAsync(Owner owner)
         {
           await  Delete(owner);
            await Save();
         }
 
-        public async Task UpdateOwner(Owner dbOwner)
+        public async Task UpdateOwnerAsync(Owner dbOwner)
         {
             await Update(dbOwner);
            await Save();

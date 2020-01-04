@@ -8,11 +8,11 @@ namespace Contracts
 {
     public interface IOwnerRepository : IRepositoryBase<Owner>
     {
-       Task<IEnumerable<Owner>> GetAllOwners();
-        Task<Owner> GetOwnerById(Guid ownerId);
-        Task<Owner> GetOwnerWithDetails(Guid ownerId);
-        Task CreateOwner(Owner owner);
-        Task DeleteOwner(Owner owner);
-        Task UpdateOwner(Owner ownerEntity);
+       Task<IEnumerable<Owner>> GetAllOwnersAsync();
+        Task<Owner> GetOwnerByIdAsync(Guid ownerId);
+        Task<Owner> GetOwnerWithDetailsAsync(Guid ownerId);
+        Task CreateOwnerAsync(Owner owner);
+        Task DeleteOwnerAsync(Owner owner);
+        Task UpdateOwnerAsync(Owner ownerEntity);
     }
 }
